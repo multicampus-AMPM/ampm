@@ -1,0 +1,59 @@
+version: '3'
+services:
+  collectd-installer:
+    build: ./../collectd-installer
+    container_name: collectd-installer
+    environment:
+      - USER=$USER
+      - PASS=$PASS
+      - OS=$OS
+      - MODE=$MODE
+    network_mode: host
+  collectd-exporter:
+    build: ./../collectd-exporter
+    container_name: collectd-exporter
+    ports:
+      - 9103:9103
+    networks:
+      - net
+  smart-optimizer:
+    build: ./../smart-optimizer
+    container_name: smart-optimizer
+    networks:
+      - net
+    volumes:
+      - models:/tmp
+  smart-predictor:
+    build: ./../smart-predictor
+    container_name: smart-predictor
+    ports:
+      - 9106:9106
+    networks:
+      - net
+    volumes:
+      - models:/tmp
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    networks:
+      - net
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - tsdb:/prometheus
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - 3000:3000
+    networks:
+      - net
+    # volume required
+networks:
+  net:
+volumes:
+  tsdb:
+    external: false
+  models:
+    external: false
