@@ -16,13 +16,22 @@ services:
       - 9103:9103
     networks:
       - net
+  model-repository:
+    build: ./.../model-repository
+    container_name: model-repository
+    ports:
+      - 5000:5000
+    networks:
+      - net
+    volumes:
+      - models:/mlflow
+    extra_hosts:
+      - model-repository:127.0.0.1
   smart-optimizer:
     build: ./../smart-optimizer
     container_name: smart-optimizer
     networks:
       - net
-    volumes:
-      - models:/tmp
   smart-predictor:
     build: ./../smart-predictor
     container_name: smart-predictor
@@ -30,8 +39,6 @@ services:
       - 9106:9106
     networks:
       - net
-    volumes:
-      - models:/tmp
   prometheus:
     image: prom/prometheus
     container_name: prometheus
