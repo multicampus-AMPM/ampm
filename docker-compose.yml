@@ -17,7 +17,7 @@ services:
     networks:
       - net
   model-repository:
-    build: ./.../model-repository
+    build: ./../model-repository
     container_name: model-repository
     ports:
       - 5000:5000
