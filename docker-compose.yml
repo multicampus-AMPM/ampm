@@ -9,13 +9,6 @@ services:
       - OS=$OS
       - MODE=$MODE
     network_mode: host
-  collectd-exporter:
-    build: ./../collectd-exporter
-    container_name: collectd-exporter
-    ports:
-      - 9103:9103
-    networks:
-      - net
   model-repository:
     build: ./../model-repository
     container_name: model-repository
@@ -37,6 +30,13 @@ services:
     container_name: smart-predictor
     ports:
       - 9106:9106
+    networks:
+      - net
+  collectd-exporter:
+    build: ./../collectd-exporter
+    container_name: collectd-exporter
+    ports:
+      - 9103:9103
     networks:
       - net
   prometheus:
