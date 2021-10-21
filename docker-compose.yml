@@ -23,6 +23,8 @@ services:
   smart-optimizer:
     build: ./../smart-optimizer
     container_name: smart-optimizer
+    environment:
+      - MODE=$MODE
     networks:
       - net
   smart-predictor:
@@ -37,6 +39,11 @@ services:
     container_name: collectd-exporter
     ports:
       - 9103:9103
+    networks:
+      - net
+  baidu-exporter:
+    build: ./../data-exporter
+    container_name: baidu-exporter
     networks:
       - net
   prometheus:
