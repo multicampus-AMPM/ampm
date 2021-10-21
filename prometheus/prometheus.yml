@@ -27,12 +27,15 @@ scrape_configs:
 
     static_configs:
       - targets: ["localhost:9090"]
-  - job_name: "collectd-exporter"
+  - job_name: "jihyun"
     static_configs:
       - targets: ["collectd-exporter:9103"]
   - job_name: "baidu-exporter"
     static_configs:
       - targets: ["baidu-exporter:8000"]
+  - job_name: "inye"
+    static_configs:
+      - targets: ["test-exporter:8001"]
   - job_name: "smart-predictor"
     static_configs:
       - targets: ["smart-predictor:9106"]

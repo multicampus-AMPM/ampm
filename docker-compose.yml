@@ -41,9 +41,14 @@ services:
       - 9103:9103
     networks:
       - net
-  baidu-exporter:
-    build: ./../data-exporter
-    container_name: baidu-exporter
+  # baidu-exporter:
+  #   build: ./../data-exporter/baidu
+  #   container_name: baidu-exporter
+  #   networks:
+  #     - net
+  test-exporter:
+    build: ./../data-exporter/test
+    container_name: test-exporter
     networks:
       - net
   prometheus:
@@ -63,11 +68,14 @@ services:
       - 3000:3000
     networks:
       - net
-    # volume required
+    volumes:
+    - dashboard:/var/lib/grafana
 networks:
   net:
 volumes:
   tsdb:
     external: false
   models:
+    external: false
+  dashboard:
     external: false
