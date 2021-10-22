@@ -41,11 +41,11 @@ services:
       - 9103:9103
     networks:
       - net
-  # baidu-exporter:
-  #   build: ./../data-exporter/baidu
-  #   container_name: baidu-exporter
-  #   networks:
-  #     - net
+  baidu-exporter:
+    build: ./../data-exporter/baidu
+    container_name: baidu-exporter
+    networks:
+      - net
   test-exporter:
     build: ./../data-exporter/test
     container_name: test-exporter
