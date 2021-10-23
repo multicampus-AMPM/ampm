@@ -46,6 +46,11 @@ services:
     container_name: baidu-exporter
     networks:
       - net
+  backblaze-exporter:
+    build: ./../data-exporter/backblaze
+    container_name: backblaze-exporter
+    networks:
+      - net
   test-exporter:
     build: ./../data-exporter/test
     container_name: test-exporter
