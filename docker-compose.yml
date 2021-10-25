@@ -75,6 +75,8 @@ services:
       - net
     volumes:
     - dashboard:/var/lib/grafana
+    - ./grafana/provisioning:/etc/grafana/provisioning
+    - ./grafana/samples/sample.json:/var/lib/grafana/dashboards/dashboard.json
 networks:
   net:
 volumes:

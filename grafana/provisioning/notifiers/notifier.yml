@@ -1,0 +1,25 @@
+apiVersion: 1
+
+notifiers:
+  - name: slack-smart-alert
+    type: slack
+    uid: ampm-smart-proba-notifier-1
+    # either
+    org_id: 1
+    # or
+    org_name: AMPM
+    is_default: true
+    send_reminder: true
+    frequency: 1h
+    disable_resolve_message: false
+    # See `Supported Settings` section for settings supported for each
+    # alert notification type.
+    settings:
+      recipient: 'XXX'
+      uploadImage: true
+    #  token: 'xoxb' # legacy setting since Grafana v7.2 (stored non-encrypted)
+      url: https://hooks.slack.com/services/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 # legacy setting since Grafana v7.2 (stored non-encrypted)
+    # Secure settings that will be encrypted in the database (supported since Grafana v7.2). See `Supported Settings` section for secure settings supported for each notifier.
+    # secure_settings:
+    #  token: 'xoxb'
+    #  url: https://slack.com
