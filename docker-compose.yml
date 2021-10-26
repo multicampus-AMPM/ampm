@@ -27,13 +27,6 @@ services:
       - MODE=$MODE
     networks:
       - net
-  smart-predictor:
-    build: ./../smart-predictor
-    container_name: smart-predictor
-    ports:
-      - 9106:9106
-    networks:
-      - net
   collectd-exporter:
     build: ./../collectd-exporter
     container_name: collectd-exporter
@@ -41,16 +34,23 @@ services:
       - 9103:9103
     networks:
       - net
-  baidu-exporter:
-    build: ./../data-exporter/baidu
-    container_name: baidu-exporter
+  smart-predictor:
+    build: ./../smart-predictor
+    container_name: smart-predictor
+    ports:
+      - 9106:9106
     networks:
       - net
-  backblaze-exporter:
-    build: ./../data-exporter/backblaze
-    container_name: backblaze-exporter
-    networks:
-      - net
+  # baidu-exporter:
+  #   build: ./../data-exporter/baidu
+  #   container_name: baidu-exporter
+  #   networks:
+  #     - net
+  # backblaze-exporter:
+  #   build: ./../data-exporter/backblaze
+  #   container_name: backblaze-exporter
+  #   networks:
+  #     - net
   test-exporter:
     build: ./../data-exporter/test
     container_name: test-exporter
