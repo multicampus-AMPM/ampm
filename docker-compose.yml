@@ -41,19 +41,29 @@ services:
       - 9106:9106
     networks:
       - net
-  # baidu-exporter:
-  #   build: ./../data-exporter/baidu
-  #   container_name: baidu-exporter
-  #   networks:
-  #     - net
-  # backblaze-exporter:
-  #   build: ./../data-exporter/backblaze
-  #   container_name: backblaze-exporter
-  #   networks:
-  #     - net
-  test-exporter:
-    build: ./../data-exporter/test
-    container_name: test-exporter
+  baidu-failure-exporter:
+    build: ./../data-exporter/baidu-failure
+    container_name: baidu-failure-exporter
+    networks:
+      - net
+  baidu-good-exporter:
+    build: ./../data-exporter/baidu-good
+    container_name: baidu-good-exporter
+    networks:
+      - net
+  inye-exporter:
+    build: ./../data-exporter/inye
+    container_name: inye-exporter
+    networks:
+      - net
+  backblaze-exporter:
+    build: ./../data-exporter/backblaze
+    container_name: backblaze-exporter
+    networks:
+      - net
+  jihyun-exporter:
+    build: ./../data-exporter/jihyun
+    container_name: jihyun-exporter
     networks:
       - net
   prometheus:
@@ -76,7 +86,7 @@ services:
     volumes:
     - dashboard:/var/lib/grafana
     - ./grafana/provisioning:/etc/grafana/provisioning
-    - ./grafana/samples/sample.json:/var/lib/grafana/dashboards/dashboard.json
+    - /home/ampm/grafana/samples:/var/lib/grafana/dashboards
 networks:
   net:
 volumes:

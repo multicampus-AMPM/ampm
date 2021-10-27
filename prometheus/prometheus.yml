@@ -30,9 +30,18 @@ scrape_configs:
   - job_name: "collectd-exporter"
     static_configs:
       - targets: ["collectd-exporter:9103"]
-  - job_name: "baidu-exporter"
+  - job_name: "baidu-failure-exporter"
     static_configs:
-      - targets: ["baidu-exporter:8000"]
+      - targets: ["baidu-failure-exporter:8000"]
+  - job_name: "baidu-good-exporter"
+    static_configs:
+      - targets: ["baidu-good-exporter:9000"]
+  - job_name: "inye-exporter"
+    static_configs:
+      - targets: ["inye-exporter:8008"]
+  - job_name: "jihyun-exporter"
+    static_configs:
+      - targets: ["jihyun-exporter:8001"]
   - job_name: "test-exporter"
     static_configs:
       - targets: ["test-exporter:8001"]
