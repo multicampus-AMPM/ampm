@@ -36,18 +36,21 @@ scrape_configs:
   # - job_name: "baidu-good-exporter"
   #   static_configs:
   #     - targets: ["baidu-good-exporter:9000"]
-  - job_name: "inye-exporter"
+  - job_name: "minji-exporter"
     static_configs:
-      - targets: ["inye-exporter:8008"]
+      - targets: ["minji-exporter:8008"]
   - job_name: "jihyun-exporter"
     static_configs:
       - targets: ["jihyun-exporter:8001"]
-  - job_name: "test-exporter"
+  - job_name: "inye-exporter"
     static_configs:
-      - targets: ["test-exporter:8001"]
-  - job_name: "backblaze-exporter"
-    static_configs:
-      - targets: ["backblaze-exporter:8002"]
+      - targets: ["inye-exporter:8010"]
+  # - job_name: "test-exporter"
+  #   static_configs:
+  #     - targets: ["test-exporter:8001"]
+  # - job_name: "backblaze-exporter"
+  #   static_configs:
+  #     - targets: ["backblaze-exporter:8002"]
   - job_name: "smart-predictor"
     static_configs:
       - targets: ["smart-predictor:9106"]
