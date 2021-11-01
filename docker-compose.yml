@@ -1,7 +1,7 @@
 version: '3'
 services:
   collectd-installer:
-    build: ./../collectd-installer
+    build: ./collectd-installer
     container_name: collectd-installer
     environment:
       - USER=$USER
@@ -10,7 +10,7 @@ services:
       - MODE=$MODE
     network_mode: host
   model-repository:
-    build: ./../model-repository
+    build: ./model-repository
     container_name: model-repository
     ports:
       - 5000:5000
@@ -22,40 +22,40 @@ services:
     extra_hosts:
       - model-repository:127.0.0.1
   smart-optimizer:
-    build: ./../smart-optimizer
+    build: ./smart-optimizer
     container_name: smart-optimizer
     environment:
       - MODE=$MODE
     networks:
       - net
   smart-predictor:
-    build: ./../smart-predictor
+    build: ./smart-predictor
     container_name: smart-predictor
     ports:
       - 9106:9106
     networks:
       - net
   jihyun-exporter:
-    build: ./../collectd-exporter
+    build: ./collectd-exporter
     container_name: jihyun-server
     ports:
       - 9103:9103
     networks:
       - net
   # jihyun-alt-exporter:
-  #   build: ./../data-exporter/collectd-alt
+  #   build: ./data-exporter/collectd-alt
   #   container_name: jihyun-server
   #   ports:
   #     - 9103:9103
   #   networks:
   #     - net
   minji-exporter:
-    build: ./../data-exporter/normal
+    build: ./data-exporter/normal
     container_name: minji-server
     networks:
       - net
   inye-exporter:
-    build: ./../data-exporter/failure
+    build: ./data-exporter/failure
     container_name: inye-server
     networks:
       - net
