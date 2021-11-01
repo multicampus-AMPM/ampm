@@ -97,7 +97,7 @@
           "exemplar": true,
           "expr": "ampm_smart_failure_proba{model=\"BestEstimator\"}",
           "interval": "",
-          "legendFormat": "{{exported_instance}}",
+          "legendFormat": "{{exported_instance}}({{drive}})",
           "refId": "A"
         }
       ],
