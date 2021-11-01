@@ -14,7 +14,7 @@ services:
     container_name: model-repository
     ports:
       - 5000:5000
-      - "50021:21"
+      # - "50021:21"
     networks:
       - net
     volumes:
@@ -28,13 +28,6 @@ services:
       - MODE=$MODE
     networks:
       - net
-  collectd-exporter:
-    build: ./../collectd-exporter
-    container_name: collectd-exporter
-    ports:
-      - 9103:9103
-    networks:
-      - net
   smart-predictor:
     build: ./../smart-predictor
     container_name: smart-predictor
@@ -42,41 +35,30 @@ services:
       - 9106:9106
     networks:
       - net
-  # baidu-failure-exporter:
-  #   build: ./../data-exporter/baidu-failure
-  #   container_name: baidu-failure-exporter
-  #   networks:
-  #     - net
-  # baidu-good-exporter:
-  #   build: ./../data-exporter/baidu-good
-  #   container_name: baidu-good-exporter
-  #   networks:
-  #     - net
-  # minji-exporter:
-  #   build: ./../data-exporter/minji
-  #   container_name: minji-exporter
-  #   networks:
-  #     - net
-  # backblaze-exporter:
-  #   build: ./../data-exporter/backblaze
-  #   container_name: backblaze-exporter
-  #   networks:
-  #     - net
-  # jihyun-exporter:
-  #   build: ./../data-exporter/jihyun
-  #   container_name: jihyun-exporter
-  #   networks:
-  #     - net
-  inye-exporter:
-    build: ./../data-exporter/inye
-    container_name: inye-exporter
+  jihyun-exporter:
+    build: ./../collectd-exporter
+    container_name: jihyun-server
+    ports:
+      - 9103:9103
     networks:
       - net
-  # failure-exporter:
-  #   build: ./../data-exporter/failure
-  #   container_name: failure-exporter
+  # jihyun-alt-exporter:
+  #   build: ./../data-exporter/collectd-alt
+  #   container_name: jihyun-server
+  #   ports:
+  #     - 9103:9103
   #   networks:
   #     - net
+  minji-exporter:
+    build: ./../data-exporter/normal
+    container_name: minji-server
+    networks:
+      - net
+  inye-exporter:
+    build: ./../data-exporter/failure
+    container_name: inye-server
+    networks:
+      - net
   prometheus:
     image: prom/prometheus
     container_name: prometheus
@@ -87,17 +69,24 @@ services:
     volumes:
       - ./prometheus:/etc/prometheus
       - tsdb:/prometheus
+  image-renderer:
+    image: grafana/grafana-image-renderer:latest
+    container_name: image-renderer
+    networks:
+      - net
   grafana:
-    image: grafana/grafana
+    build: ./grafana
     container_name: grafana
     ports:
       - 3000:3000
     networks:
       - net
     volumes:
-    - dashboard:/var/lib/grafana
-    - ./grafana/provisioning:/etc/grafana/provisioning
-    - /home/ampm/grafana/samples:/var/lib/grafana/dashboards
+    - grafana:/var/lib/grafana
+    environment:
+      - GF_RENDERING_SERVER_URL=http://image-renderer:8081/render
+      - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
+      - GF_LOG_FILTERS=rendering:debug
 networks:
   net:
 volumes:
@@ -105,5 +94,5 @@ volumes:
     external: false
   models:
     external: false
-  dashboard:
+  grafana:
     external: false

@@ -18,7 +18,7 @@ notifiers:
       recipient: 'XXX'
       uploadImage: true
     #  token: 'xoxb' # legacy setting since Grafana v7.2 (stored non-encrypted)
-      url: https://hooks.slack.com/services/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 # legacy setting since Grafana v7.2 (stored non-encrypted)
+      url: https://hooks.slack.com/services/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 # legacy setting since Grafana v7.2 (stored non-encrypted)
     # Secure settings that will be encrypted in the database (supported since Grafana v7.2). See `Supported Settings` section for secure settings supported for each notifier.
     # secure_settings:
     #  token: 'xoxb'

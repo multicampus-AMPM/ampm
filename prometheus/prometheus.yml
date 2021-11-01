@@ -1,8 +1,7 @@
 # my global config
 global:
-  scrape_interval: 10s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
-  evaluation_interval: 10s # Evaluate rules every 15 seconds. The default is every 1 minute.
-  # scrape_timeout is set to the global default (10s).
+  scrape_interval: 10s
+  evaluation_interval: 10s
 
 # Alertmanager configuration
 alerting:
@@ -14,43 +13,25 @@ alerting:
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
 rule_files:
   # - "first_rules.yml"
-  # - "second_rules.yml"
 
 # A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
 scrape_configs:
-  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
   - job_name: "prometheus"
-
-    # metrics_path defaults to '/metrics'
-    # scheme defaults to 'http'.
-
     static_configs:
       - targets: ["localhost:9090"]
-  - job_name: "collectd-exporter"
+  - job_name: "jihyun-server"
     static_configs:
-      - targets: ["collectd-exporter:9103"]
-  # - job_name: "baidu-failure-exporter"
-  #   static_configs:
-  #     - targets: ["baidu-failure-exporter:8000"]
-  # - job_name: "baidu-good-exporter"
-  #   static_configs:
-  #     - targets: ["baidu-good-exporter:9000"]
-  - job_name: "minji-exporter"
+      - targets: ["jihyun-server:9103"]
+  - job_name: "minji-server"
     static_configs:
-      - targets: ["minji-exporter:8008"]
-  - job_name: "jihyun-exporter"
+      - targets: ["minji-server:8001"]
+  - job_name: "inye-server"
     static_configs:
-      - targets: ["jihyun-exporter:8001"]
-  - job_name: "inye-exporter"
-    static_configs:
-      - targets: ["inye-exporter:8010"]
-  # - job_name: "test-exporter"
-  #   static_configs:
-  #     - targets: ["test-exporter:8001"]
-  # - job_name: "backblaze-exporter"
-  #   static_configs:
-  #     - targets: ["backblaze-exporter:8002"]
+      - targets: ["inye-server:8002"]
   - job_name: "smart-predictor"
     static_configs:
       - targets: ["smart-predictor:9106"]
+  - job_name: "smart-optimizer"
+    scrape_interval: 60s
+    static_configs:
+      - targets: ["smart-optimizer:9109"]
