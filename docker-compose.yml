@@ -24,8 +24,8 @@ services:
   smart-optimizer:
     build: ./smart-optimizer
     container_name: smart-optimizer
-    environment:
-      - MODE=$MODE
+    ports:
+      - 9109:9109
     networks:
       - net
   smart-predictor:

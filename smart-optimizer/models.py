@@ -12,9 +12,9 @@ import numpy as np
 def get_matrix(y_test, y_prediction):
     return {
         'accuracy': accuracy_score(y_test, y_prediction),
-        'precision': precision_score(y_test, y_prediction, labels=np.unique(y_prediction)),
-        'recall': recall_score(y_test, y_prediction, labels=np.unique(y_prediction)),
-        'f1': f1_score(y_test, y_prediction, labels=np.unique(y_prediction))
+        'precision': precision_score(y_test, y_prediction, average='weighted', labels=np.unique(y_prediction)),
+        'recall': recall_score(y_test, y_prediction, average='weighted', labels=np.unique(y_prediction)),
+        'f1': f1_score(y_test, y_prediction, average='weighted', labels=np.unique(y_prediction))
     }
 
 
@@ -79,6 +79,10 @@ class XGB(MODEL):
         if model is None:
             model = XGBClassifier()
         return model
+    
+    def fit(self, x_train, y_train):
+        self.model.fit(x_train, y_train)
+        return self.model
 
 
 class OCSVM(MODEL):
@@ -89,49 +93,56 @@ class OCSVM(MODEL):
         return model
 
     def encoding(self, x_train, y_train, x_test, y_test):
-        # convert
+
+        # train
         x_train = np.array(x_train)
-        x_test = np.array(x_train)
         y_train = np.array(y_train)
-        y_test = np.array(y_train)
+
+        # test
+        x_test = np.array(x_test)
+        y_test = np.array(y_test)
+
+        # reshape
         x_train = x_train.reshape(-1, 59, 2, 1)
         x_test = x_test.reshape(-1, 59, 2, 1)
+
+        # float
         y_train = y_train.astype(float)
         y_test = y_test.astype(float)
 
         # left
-        left_encoder_input = tf.keras.Input(shape=(59, 2, 1))
-        l_x1 = tf.keras.layers.Conv2D(64, 3, strides=2, padding='same')(left_encoder_input)
-        l_x2 = tf.keras.layers.BatchNormalization()(l_x1)
-        l_x3 = tf.keras.layers.LeakyReLU()(l_x2)
-        l_x4 = tf.keras.layers.Conv2D(64, 3, padding='same')(l_x3)
-        l_x5 = tf.keras.layers.BatchNormalization()(l_x4)
-        l_x6 = tf.keras.layers.LeakyReLU()(l_x5)
-        l_x7 = tf.keras.layers.Flatten()(l_x6)
-        left_encoder_output = tf.keras.layers.Dense(1)(l_x7)
+        # left_encoder_input = tf.keras.Input(shape=(59, 2, 1))
+        # l_x1 = tf.keras.layers.Conv2D(64, 3, strides=2, padding='same')(left_encoder_input)
+        # l_x2 = tf.keras.layers.BatchNormalization()(l_x1)
+        # l_x3 = tf.keras.layers.LeakyReLU()(l_x2)
+        # l_x4 = tf.keras.layers.Conv2D(64, 3, padding='same')(l_x3)
+        # l_x5 = tf.keras.layers.BatchNormalization()(l_x4)
+        # l_x6 = tf.keras.layers.LeakyReLU()(l_x5)
+        # l_x7 = tf.keras.layers.Flatten()(l_x6)
+        # left_encoder_output = tf.keras.layers.Dense(1)(l_x7)
 
-        # right
-        right_encoder_input = tf.keras.Input(shape=(59, 2, 1))
-        r_x1 = tf.keras.layers.Conv2D(64, 3, strides=2, padding='same')(right_encoder_input)
-        r_x2 = tf.keras.layers.BatchNormalization()(r_x1)
-        r_x3 = tf.keras.layers.LeakyReLU()(r_x2)
-        r_x4 = tf.keras.layers.Conv2D(64, 3, padding='same')(r_x3)
-        r_x5 = tf.keras.layers.BatchNormalization()(r_x4)
-        r_x6 = tf.keras.layers.LeakyReLU()(r_x5)
-        r_x7 = tf.keras.layers.Flatten()(r_x6)
-        right_encoder_output = tf.keras.layers.Dense(1)(r_x7)
+        # # right
+        # right_encoder_input = tf.keras.Input(shape=(59, 2, 1))
+        # r_x1 = tf.keras.layers.Conv2D(64, 3, strides=2, padding='same')(right_encoder_input)
+        # r_x2 = tf.keras.layers.BatchNormalization()(r_x1)
+        # r_x3 = tf.keras.layers.LeakyReLU()(r_x2)
+        # r_x4 = tf.keras.layers.Conv2D(64, 3, padding='same')(r_x3)
+        # r_x5 = tf.keras.layers.BatchNormalization()(r_x4)
+        # r_x6 = tf.keras.layers.LeakyReLU()(r_x5)
+        # r_x7 = tf.keras.layers.Flatten()(r_x6)
+        # right_encoder_output = tf.keras.layers.Dense(1)(r_x7)
 
-        # concat
-        concat = tf.keras.layers.concatenate([left_encoder_output, right_encoder_output])
-        encoder_output = tf.keras.layers.Dense(1)(concat)
+        # # concat
+        # concat = tf.keras.layers.concatenate([left_encoder_output, right_encoder_output])
+        # encoder_output = tf.keras.layers.Dense(1)(concat)
 
-        # encoding train
-        encoder_train = tf.keras.Model(inputs=[left_encoder_input, right_encoder_input], outputs=encoder_output)
-        encoder_train.compile(optimizer=tf.keras.optimizers.Adam(0.0005), loss=tf.keras.losses.MeanSquaredError())
-        encoder_train.fit(x_train, y_train, batch_size=1, epochs=10)
-        x_train = encoder_train.predict(x_train)
-        
-        # test
+        # train encoding
+        # encoder_train = tf.keras.Model(inputs=[left_encoder_input, right_encoder_input], outputs=encoder_output)
+        # encoder_train.compile(optimizer=tf.keras.optimizers.Adam(0.0005), loss=tf.keras.losses.MeanSquaredError())
+        # encoder_train.fit([x_train, np.array([])], [y_train, np.array([])], batch_size=1, epochs=10)
+        # x_train = encoder_train.predict([x_train, y_train])
+
+        # test encoding
         encoder_input = tf.keras.Input(shape=(59, 2, 1))
         x = tf.keras.layers.Conv2D(64, 3, strides=2, padding='same')(encoder_input)
         x = tf.keras.layers.BatchNormalization()(x)
@@ -141,12 +152,11 @@ class OCSVM(MODEL):
         x = tf.keras.layers.LeakyReLU()(x)
         x = tf.keras.layers.Flatten()(x)
         encoder_output = tf.keras.layers.Dense(1)(x)
-
-        # encoding test
         encoder_test = tf.keras.Model(encoder_input, encoder_output)
         encoder_test.compile(optimizer=tf.keras.optimizers.Adam(0.0005), loss=tf.keras.losses.MeanSquaredError())
         encoder_test.fit(x_test, y_test, batch_size=1, epochs=1)
         x_test = encoder_test.predict(x_test)
+        x_train = encoder_test.predict(x_train)
         return (x_train, y_train), (x_test, y_test)
     
     def afterprocess(self, prediction):

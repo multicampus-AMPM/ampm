@@ -3,6 +3,7 @@ from prometheus_flask_exporter import PrometheusMetrics
 from prometheus_client.core import GaugeMetricFamily
 import os
 import mlflow
+from mlflow.tracking import MlflowClient
 from models import RF, XGB, OCSVM
 from register import log_model
 import pandas as pd
@@ -166,16 +167,23 @@ class OptimizerExporter(object):
         self.url = os.environ['prom']
         self.queries = ['collectd_smart_smart_attribute_current[1h]', 'collectd_smart_smart_attribute_pretty[1h]']
         self.models = self.load_model()
-        self.logger.error(self.models)
-
     
     def load_model(self):
         model_list = list()
         for model_name, model_obj in MODELS.items():
             try:
                 ref = f'models:/{model_name}/Production'
-                model = mlflow.sklearn.load_model(ref) if model_name == rf else mlflow.pyfunc.load_model(ref)
-                model_list.append(model_obj(model, PARAMS[model_name]))
+                model = None
+                if model_name == xgb:
+                    # mlflow.xgboost.load_model에 이슈 있음
+                    # estimator should be an estimator implementing 'fit' method, <xgboost.core.Booster object at 0x7ff4115d7490> was passed
+                    # model = mlflow.xgboost.load_model(ref)
+                    # model = mlflow.pyfunc.load_model(ref)
+                    pass
+                else: 
+                    model = mlflow.sklearn.load_model(ref)
+                if model is not None:
+                    model_list.append(model_obj(model, PARAMS[model_name]))
             except Exception:
                 continue
         return model_list
@@ -252,12 +260,38 @@ class OptimizerExporter(object):
                         else:
                             mlflow.sklearn.log_model(result['model'], 'model')
                     self.add_metric(run.info.run_id, result['name'], result['metrics'], gmt)
-                # TODO 모델 갈아끼기
         yield gmt
-    
+        # self.change_model(runs)
+        
     def add_metric(self, run_id, model_name, run_metrics, gmt):
         for metric_name, value in run_metrics.items():
             gmt.add_metric([run_id, model_name, metric_name], value)
+
+    # TODO: async
+    def change_model(self, runs):
+        best_run = mlflow.search_runs(["0"], order_by=["metrics.recall DESC"], max_results=1)
+        if not best_run.empty:
+            # TODO: 현재 베스트 모델과 비교, 현재 3가지 모델 등록하고 있어서 불가능
+
+            model_name = 'BestEstimator'
+            best_run = best_run.T
+            client = MlflowClient()
+            try:
+                best = client.get_registered_model(model_name)
+            except Exception as e:
+                # RESOURCE_DOES_NOT_EXIST
+                best = client.create_registered_model(model_name)
+            client.create_model_version(
+                name=model_name,
+                source=best_run['artifact_uri'],
+                run_id=best_run['run_id'],
+                description=f"estimator '{model_name}' for S.M.A.R.T."
+            )
+            client.transition_model_version_stage(
+                name=model_name,
+                version=1,
+                stage="Production"
+             )
 
 
 app = Flask(__name__)
@@ -308,6 +342,10 @@ def parse_env():
 
 if __name__ == '__main__':
     parse_env()
+    # 처음에 모델을 생성하고
+    # 그다음에 RECALL 기준으로 등록하고
+    # 등록된 모델 다시 불러와서
+    # 이전 모델이랑 비교해서 더 좋은거 BestEstimator로 등록
     log_model()
     exporter.registry.register(OptimizerExporter(app.logger))
     app.run(host=os.environ.get('host'), port=os.environ.get('port'))
