@@ -50,7 +50,7 @@
   $ sudo vi /etc/selinux/config
 	SELINUX=disabled
   ```
-- ssh, firewalld 설치 확인
+- SSH, Firewalld 설치 확인
   ```bash
   $ sudo systemctl status sshd
   $ sudo systemctl status firewalld
